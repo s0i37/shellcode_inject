@@ -3,8 +3,15 @@
 #include <string.h>
 #include <windows.h>
 
+#pragma comment(lib, "advapi32.lib")
+
+/*
+  cl /c shellcode_inject.c
+  link /out:shellcode_inject.exe shellcode_inject.obj advapi32.lib
+*/
+
 #define DWORD unsigned long
-#define SHELLCODE_SIZE 4096
+#define SHELLCODE_SIZE 1024*1024
 
 typedef int (*RTLCREATEUSERTHREAD_PTR)(HANDLE,int,int,int,int,int,LPVOID,LPVOID,int,LPWORD *, int);
 
