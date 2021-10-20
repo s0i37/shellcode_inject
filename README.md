@@ -13,3 +13,5 @@
 `msfvenom -p windows/x64/exec CMD="c:\path\to\prog.exe arg arg" EXITFUNC=thread -f raw -o exec.bin`
 
 `shellcode_inject64.exe PID64 exec.bin`
+
+### GPL
